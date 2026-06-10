@@ -169,6 +169,8 @@ column definitions
 lineage graph
 data relationships
 
+<img width="1285" height="804" alt="image" src="https://github.com/user-attachments/assets/b108a593-3d08-4646-8eae-918f3069bdd6" />
+
 
 The lineage graph provides a visual representation of how raw GA4 events are transformed into analytical datasets and business-ready marts.
 
