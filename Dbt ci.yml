@@ -1,53 +1,51 @@
 name: dbt-ci
 
 on:
-push:
-branches:
-- main
-
-pull_request:
-branches:
-- main
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
 
 jobs:
+  dbt:
+    runs-on: ubuntu-latest
 
-dbt:
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
-```
-runs-on: ubuntu-latest
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
 
-steps:
+      - name: Install dbt
+        run: |
+          pip install dbt-bigquery
 
-  - name: Checkout repository
-    uses: actions/checkout@v4
+      - name: Create temporary profile
+        run: |
+          cat > profiles.yml << EOF
+          ga4_analytics:
+            target: dev
+            outputs:
+              dev:
+                type: bigquery
+                method: service-account
+                project: dummy-project
+                dataset: dummy_dataset
+                threads: 1
+                keyfile: dummy.json
+          EOF
 
-  - name: Setup Python
-    uses: actions/setup-python@v5
-    with:
-      python-version: "3.11"
+      - name: Install packages
+        run: dbt deps
+        env:
+          DBT_PROFILES_DIR: "."
 
-  - name: Install dbt
-    run: |
-      pip install dbt-bigquery
-
-  - name: Create temporary profile
-    run: |
-      cat > profiles.yml << EOF
-      ga4_analytics:
-        target: dev
-        outputs:
-          dev:
-            type: bigquery
-            method: service-account
-            project: dummy-project
-            dataset: dummy_dataset
-            threads: 1
-            keyfile: dummy.json
-      EOF
-
-  - name: Install packages
-    run: dbt deps --profiles-dir .
-
-  - name: Validate project
-    run: dbt parse --profiles-dir .
-```
+      - name: Validate project
+        run: dbt parse
+        env:
+          DBT_PROFILES_DIR: "."
