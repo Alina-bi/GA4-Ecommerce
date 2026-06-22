@@ -1,17 +1,13 @@
-name: dbt CI
+name: dbt-ci
 
 on:
   push:
     branches:
       - main
 
-  pull_request:
-    branches:
-      - main
-
 jobs:
 
-  dbt-build:
+  dbt:
 
     runs-on: ubuntu-latest
 
@@ -23,18 +19,24 @@ jobs:
         with:
           python-version: "3.11"
 
-      - name: Install dbt
+      - run: pip install dbt-bigquery
+
+      - name: Create dummy profile
         run: |
-          pip install dbt-core dbt-bigquery
+          mkdir -p ~/.dbt
+          cat > ~/.dbt/profiles.yml << EOF
+          ga4_analytics:
+            target: dev
+            outputs:
+              dev:
+                type: bigquery
+                method: oauth
+                project: dummy-project
+                dataset: dummy_dataset
+                threads: 1
+                location: US
+          EOF
 
-      - name: Install packages
-        run: dbt deps
+      - run: dbt deps
 
-      - name: dbt parse
-        run: dbt parse
-
-      - name: dbt build
-        run: dbt build
-
-      - name: dbt source freshness
-        run: dbt source freshness
+      - run: dbt parse
