@@ -34,7 +34,7 @@ steps:
     run: |
       mkdir -p ~/.dbt
 
-      cat > ~/.dbt/profiles.yml << EOF
+      cat > profiles.yml << EOF
       ga4_analytics:
         target: dev
         outputs:
@@ -48,8 +48,8 @@ steps:
       EOF
 
   - name: Install packages
-    run: dbt deps
+    run: dbt deps --profiles-dir .
 
   - name: Validate project
-    run: dbt parse
+    run: dbt parse --profiles-dir .
 ```
