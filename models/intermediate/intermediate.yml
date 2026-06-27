@@ -3,7 +3,7 @@ version: 2
 models:
   - name: int_purchase_events_deduped
     description: >
-      Ephemeral модель дедуплікації + розділення purchase-подій. Обробляє
+      Модель дедуплікації + розділення purchase-подій. Обробляє
       два типи DQ-проблем: (1) GTM double-fire — інстант-повтори тієї самої
       покупки (розрив < 1 год, ідентичні items/revenue) — дедуплікуються в
       один рядок; (2) transaction_id collision — синтетичний датасет
